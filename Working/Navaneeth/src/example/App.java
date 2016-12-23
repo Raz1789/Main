@@ -1,50 +1,86 @@
 package example;
 
-import java.awt.Frame;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
-public class App extends ExitableJFrame {
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+
+public class App extends JComponent implements MouseMotionListener,MouseListener {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8984059550307826098L;
-
-	Image image;
-	Insets insets;
-
-	public App(String filename) {
-		super(filename);
-		image = getToolkit().getImage(filename);
-	}
+	private static final long serialVersionUID = 1198592621116410922L;
+	Insets insets = new Insets(15, 3, 3, 3);
+	private StringBuffer sb = new StringBuffer("");
 
 	public void paint(Graphics g) {
-		super.paint(g);
-		if (insets == null) {
-			insets = getInsets();
-		}
-		try {
-		for (int i = 0; i < 100; i++) {
-			repaint();
-			g.drawImage(image, insets.left + i*3, insets.top, this);
-			Thread.sleep(200);
-		}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		/*
+		 * super.paint(g); if (insets == null) { insets = getInsets(); }
+		 */
 
+		g.translate(insets.left, insets.top);
+		g.setFont(new Font("Serif", Font.PLAIN, 16));
+		g.drawString(sb.toString(), 0, 0);
+	}
+
+	public void mouseDragged(MouseEvent e) {
+	}
+
+	public void mouseMoved(MouseEvent e) {
+		sb.delete(0, sb.toString().length());
+		sb.append(" X: " + e.getX() + " Y: " + e.getY());
+		System.out.println(sb.toString());
+		repaint();
 	}
 
 	public static void main(String[] args) {
-		if (args.length > 0) {
-			Frame f = new App(args[0]);
-			f.setSize(1280, 980);
-			f.setVisible(true);
-		} else {
-			System.err.println("Please specify image to display");
-		}
+		JFrame frame = new JFrame("Mouse Motion Listener");
+		App game = new App();
+		frame.setPreferredSize(new Dimension(800, 600));
+		frame.add(game);
+		frame.setResizable(false);
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		frame.addMouseMotionListener(game);
+		frame.addMouseListener(game);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		sb.append("  Clicked");
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		sb.append("  Entered");
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		sb.append("  Exited");
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		sb.append("  Pressed");
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		sb.append("  Released");
+		
 	}
 
 }
