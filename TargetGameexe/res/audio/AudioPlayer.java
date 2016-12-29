@@ -1,4 +1,4 @@
-package main;
+package audio;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class AudioPlayer {
-	
+
 	private Clip clip;
 
 	public AudioPlayer(String s) {
@@ -22,23 +22,40 @@ public class AudioPlayer {
 			e1.printStackTrace();
 		}
 	}
-	
+
 	public void play() {
-		
-		if(clip == null) {return;}
+
+		if (clip == null) {
+			return;
+		}
 		stop();
 		clip.setFramePosition(0);
 		clip.start();
-		
+
 	}
-	
+
 	public void stop() {
-		if(clip.isRunning()) clip.stop();
+		if (clip.isRunning())
+			clip.stop();
 	}
+
 	public void close() {
 		stop();
 		clip.close();
-		
+
+	}
+
+	public boolean isPlaying() {
+		return clip.isRunning();
+	}
+	
+	public void playContinuous() {
+		if(clip == null) {
+			return;
+		}
+		stop();
+		clip.setFramePosition(0);
+		clip.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 
 }

@@ -3,6 +3,8 @@ package main;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import audio.AudioPlayer;
+
 public class Target {
 	
 	protected int scale = 3;
@@ -57,16 +59,19 @@ public class Target {
 		if(exp < dia3/2){
 			expire = true;
 			hit = true;
+			new AudioPlayer("/audio/Silencer.wav").play();
 			return 10;
 		}
 		else if(exp < dia2/2) {
 			hit = true;
 			expire = true;
+			new AudioPlayer("/audio/Silencer.wav").play();
 			return 5;
 		}
 		else if (exp < dia1/2) {
 			hit = true;
 			expire = true;
+			new AudioPlayer("/audio/Silencer.wav").play();
 			return 1;
 		}
 		else
