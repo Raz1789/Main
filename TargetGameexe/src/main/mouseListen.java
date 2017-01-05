@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -10,6 +11,7 @@ public class mouseListen implements MouseListener,MouseMotionListener {
 	private int mMX, mMY;
 	private boolean click;
 	private boolean entered = false;
+	private Insets insets = new Insets(0,0,0,0);
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -49,14 +51,16 @@ public class mouseListen implements MouseListener,MouseMotionListener {
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		mMX = e.getX();
-		mMY = e.getY();
+		if(e.getY() > ((Game.HEIGHT*Game.SCALE)/6 + insets.top))
+			mMY = e.getY();
 		
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		mMX = e.getX();
-		mMY = e.getY();
+		if(e.getY() > ((Game.HEIGHT*Game.SCALE)/6 + insets.top))
+			mMY = e.getY();
 		
 	}
 	
@@ -85,7 +89,7 @@ public class mouseListen implements MouseListener,MouseMotionListener {
 		return mY;
 	}
 
-	public void update() {
-		System.out.println(mX + " | " + mY);
+	public void setInsets(Insets insets) {
+		this.insets = insets;		
 	}
 }

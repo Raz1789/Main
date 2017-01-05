@@ -27,9 +27,11 @@ public class Game extends JPanel implements Runnable {
 
 	public static final int WIDTH = 300;
 	public static final int HEIGHT = WIDTH / 12 * 9;
-	public static final int SCALE = 2;
+	public static final int SCALE = 3;
 	public static final int FPS = 30;
 	public static final int TIMERSCALE = 700;
+	public static final int LEVELHITLIMIT = 2;
+	public static final int LEVELMAX  = 15;
 
 	private Vector<Target> vT;
 	private Vector<TargetDisappear> vTD;
@@ -37,7 +39,7 @@ public class Game extends JPanel implements Runnable {
 	private Random rand;
 
 	private int hitCounter = 0, gScore = 0;
-	private int level = 1, levelHitLimit = 10;
+	private int level = 1;
 	private int gX;
 	private int gY;
 
@@ -48,6 +50,7 @@ public class Game extends JPanel implements Runnable {
 	private long levelTimeLimit = 45 * 1000;
 	private int timeLeft = (int) (levelTimeLimit / 1000);
 	private int timerClosingCounter = 0;
+	private String logo = "eNDgamers Production";
 
 	private boolean running = false;
 	private boolean bIntro = false;
@@ -63,9 +66,11 @@ public class Game extends JPanel implements Runnable {
 	public mouseListen mListen;
 
 	public AudioPlayer apIntro;
-	
+
 	private Thread thread;
 	private Insets insets;
+
+
 
 	// CONSTRUCTOR
 
@@ -82,7 +87,6 @@ public class Game extends JPanel implements Runnable {
 	}
 
 	// METHODS
-	
 
 	// Game Initialization method
 
@@ -100,11 +104,7 @@ public class Game extends JPanel implements Runnable {
 			// getting bufferedImage's Graphics2D
 			g = (Graphics2D) image.getGraphics();
 
-			// setting Anti-aliasing properties
-			// TEXT
-			g.setRenderingHints(
-					new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON));
-			// GRAPHICS
+			// setting Anti-aliasing properties - GRAPHICS
 			g.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
 			g.fillRect(0, 0, (WIDTH * SCALE) + insets.left * 2 + insets.right * 2,
 					(HEIGHT * SCALE) + insets.top * 2 + insets.bottom * 2);
@@ -119,6 +119,7 @@ public class Game extends JPanel implements Runnable {
 			}
 			g.drawImage(cImage, mListen.getMMX() - 25, mListen.getMMY() - 25, null);
 		}
+		mListen.setInsets(insets);
 		apIntro = new AudioPlayer("/audio/Intro.wav");
 		apIntro.playContinuous();
 		thread.start();
@@ -135,7 +136,7 @@ public class Game extends JPanel implements Runnable {
 
 		// Game Area
 		g.setColor(new Color(87, 115, 229));
-		g.fillRect(insets.left, insets.top + (getHeight() / 6), getWidth(), (5 * getHeight() / 6));
+		g.fillRect(insets.left, insets.top + (getHeight() / 6), getWidth(), (5 * getHeight() / 6)+insets.bottom);
 		g.setStroke(new BasicStroke(3));
 		g.setColor(new Color(87, 115, 229).darker());
 		g.drawRect(insets.left, insets.top + (getHeight() / 6), getWidth() - insets.right,
@@ -163,15 +164,15 @@ public class Game extends JPanel implements Runnable {
 		g.setColor(Color.GRAY);
 		g.drawString(str1[1], (getWidth() - length) / 2, insets.top + 12 * SCALE * 2);
 		g.setColor(Color.RED);
-		g.drawString(str1[2], ((getWidth() + length) / 2) + 5*SCALE, insets.top + 12 * SCALE * 2);
+		g.drawString(str1[2], ((getWidth() + length) / 2) + 5 * SCALE, insets.top + 12 * SCALE * 2);
 
 		g.setFont(new Font("Century Gothic", Font.PLAIN, 12 * SCALE));
 		g.setColor(Color.RED);
-		g.drawString(str2[0], insets.left+10*SCALE, (getHeight() / 4) + 20 * SCALE);
+		g.drawString(str2[0], insets.left + 10 * SCALE, (getHeight() / 4) + 20 * SCALE);
 		g.setColor(Color.WHITE);
-		g.drawString(str2[1], insets.left+10*SCALE, (getHeight() / 4) + 20 * SCALE * 2);
+		g.drawString(str2[1], insets.left + 10 * SCALE, (getHeight() / 4) + 20 * SCALE * 2);
 		g.setColor(Color.RED);
-		g.drawString(str2[2], insets.left+10*SCALE, (getHeight() / 4) + 20 * SCALE * 3);
+		g.drawString(str2[2], insets.left + 10 * SCALE, (getHeight() / 4) + 20 * SCALE * 3);
 		g.setColor(Color.BLACK);
 		length = (int) g.getFontMetrics().getStringBounds(str2[3], g).getWidth();
 		g.drawString(str2[3], ((getWidth() - length) / 2), (getHeight() / 4) + 20 * SCALE * 5);
@@ -179,6 +180,9 @@ public class Game extends JPanel implements Runnable {
 		g.drawString(str2[4], ((getWidth() - length) / 2), (getHeight() / 4) + 20 * SCALE * 6);
 		length = (int) g.getFontMetrics().getStringBounds(str2[5], g).getWidth();
 		g.drawString(str2[5], (getWidth() - length) / 2, getHeight() - 6 * SCALE * 2);
+		g.setFont(new Font("Century Gothic", Font.BOLD, 5 * SCALE));
+		length = (int) g.getFontMetrics().getStringBounds(logo, g).getWidth();
+		g.drawString(logo, getWidth() - length - insets.right - 2 * SCALE, (getHeight() / 6) + insets.top - 5 * SCALE);
 
 		new Target((getWidth() - (60 * SCALE)), ((getHeight() / 4) + (30 * SCALE)), 1, System.currentTimeMillis())
 				.render(g);
@@ -223,7 +227,7 @@ public class Game extends JPanel implements Runnable {
 				fps = 0;
 			}
 		}
-		
+
 		apIntro.close();
 
 		// When all is done and gone
@@ -245,7 +249,7 @@ public class Game extends JPanel implements Runnable {
 		}
 
 		if (!bIntro) {
-			
+
 			// LEVEL INITIALIZATION UPDATE
 			if ((System.currentTimeMillis() - levelInit < levelInitDelay) && wait) {
 				int transp = (int) (Math
@@ -254,7 +258,7 @@ public class Game extends JPanel implements Runnable {
 				if (transp > 255) {
 					transp = 255;
 				}
-				
+
 				// HUD
 				g.setColor(new Color(240, 240, 240));
 				g.fillRect(insets.left, insets.top, getWidth() - insets.right, (getHeight() / 6));
@@ -265,7 +269,7 @@ public class Game extends JPanel implements Runnable {
 
 				// Game Area
 				g.setColor(new Color(87, 115, 229));
-				g.fillRect(insets.left, insets.top + (getHeight() / 6), getWidth(), (5 * getHeight() / 6));
+				g.fillRect(insets.left, insets.top + (getHeight() / 6), getWidth(), (5 * getHeight() / 6)+insets.bottom);
 				g.setStroke(new BasicStroke(3));
 				g.setColor(new Color(87, 115, 229).darker());
 				g.drawRect(insets.left, insets.top + (getHeight() / 6), getWidth() - insets.right,
@@ -294,7 +298,7 @@ public class Game extends JPanel implements Runnable {
 				}
 
 				// Update Level
-				if (hitCounter >= levelHitLimit && level < 4) {
+				if (hitCounter >= LEVELHITLIMIT && level < LEVELMAX) {
 					level++;
 					hitCounter = 0;
 					levelInit = System.currentTimeMillis();
@@ -305,7 +309,7 @@ public class Game extends JPanel implements Runnable {
 				}
 
 				// Timer update
-				
+
 				if ((System.currentTimeMillis() - levelTimer > levelTimeLimit)) {
 					running = false;
 					timeOver = true;
@@ -322,16 +326,15 @@ public class Game extends JPanel implements Runnable {
 					new AudioPlayer("/audio/Tick.wav").play();
 				if ((timerClosingCounter % FPS == 0) && (timeLimitClosing == true) && (timeLeft == 0)) {
 					new AudioPlayer("/audio/Buzzer.wav").play();
-					try{
-					Thread.sleep(2500);
-					}catch (InterruptedException e) {
+					try {
+						Thread.sleep(2500);
+					} catch (InterruptedException e) {
 						System.out.println(e.getMessage());
 					}
 					timeLimitClosing = false;
 				}
-				
 
-				if (level == 4)
+				if (level == LEVELMAX)
 					running = false;
 
 				if (running) {
@@ -340,7 +343,10 @@ public class Game extends JPanel implements Runnable {
 
 					if (createTime == 0)
 						createTime = System.currentTimeMillis();
-					if ((System.currentTimeMillis() - createTime) > TIMERSCALE * (4 - level)) {
+					
+					System.out.println((3 * (Game.TIMERSCALE - ((Game.TIMERSCALE / (LEVELMAX+1)) * level))));
+					
+					if ((System.currentTimeMillis() - createTime) > (3 * (Game.TIMERSCALE - ((Game.TIMERSCALE / (LEVELMAX+1)) * level)))) {
 						createTime = 0;
 						vT.add(new Target(
 								rand.nextInt(getWidth() - insets.right - Target.getDia()) + insets.left
@@ -359,7 +365,7 @@ public class Game extends JPanel implements Runnable {
 						if (!vT.isEmpty())
 							for (Target target : vT) {
 								gScore += target.getScore(gX, gY);
-								if(target.isHit())
+								if (target.isHit())
 									hitCounter++;
 							}
 					}
@@ -419,10 +425,13 @@ public class Game extends JPanel implements Runnable {
 			else
 				g.drawString("TIMER: 0:" + timeLeft, insets.left + 10, insets.top + 12 * SCALE * 2);
 		}
+		g.setFont(new Font("Century Gothic", Font.BOLD, 5 * SCALE));
+		length = (int) g.getFontMetrics().getStringBounds(logo, g).getWidth();
+		g.drawString(logo, getWidth() - length - insets.right - 2 * SCALE, (getHeight() / 6) + insets.top - 5 * SCALE);
 
 		// Game Area
 		g.setColor(new Color(87, 115, 229));
-		g.fillRect(insets.left, insets.top + (getHeight() / 6), getWidth(), (5 * getHeight() / 6));
+		g.fillRect(insets.left, insets.top + (getHeight() / 6), getWidth(), (5 * getHeight() / 6)+insets.bottom);
 		g.setStroke(new BasicStroke(3));
 		g.setColor(new Color(87, 115, 229).darker());
 		g.drawRect(insets.left, insets.top + (getHeight() / 6), getWidth() - insets.right,
@@ -457,7 +466,7 @@ public class Game extends JPanel implements Runnable {
 		gFrame.drawImage(image, 0, 0, null);
 		gFrame.dispose();
 	}
-	
+
 	// GAME WAIT VARIABLE GETTER
 
 	public static boolean isWait() {
@@ -468,8 +477,6 @@ public class Game extends JPanel implements Runnable {
 
 	public void paintComponent(Graphics2D g) {
 	}
-
-
 
 	// Game destructor method
 
@@ -516,8 +523,6 @@ public class Game extends JPanel implements Runnable {
 
 		// rendering Final Screen
 		render();
-		
-		
 
 		// Thread closure
 		try {
@@ -541,7 +546,7 @@ public class Game extends JPanel implements Runnable {
 		game.frame.setResizable(false);
 		game.frame.setFocusable(true);
 		game.frame.requestFocus();
-		game.frame.setLocationRelativeTo(null);
+		//game.frame.setLocationRelativeTo(null);
 		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		game.frame.addMouseMotionListener(game.mListen);
 		game.frame.addMouseListener(game.mListen);
